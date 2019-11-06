@@ -3,7 +3,9 @@
     "description": "Laravel Library for running commands with ZMQ heartbeats ",
     "type": "library",
     "license": "MIT",
-    "require": {},
+    "require": {
+        "nbj/stopwatch": "^0.0.4"
+    },
     "require-dev": {
         "phpunit/phpunit": "*",
         "friendsofphp/php-cs-fixer": "*"
