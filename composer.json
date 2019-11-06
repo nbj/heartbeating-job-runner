@@ -1,0 +1,21 @@
+{
+    "name": "nbj/heartbeating-job-runner",
+    "description": "Laravel Library for running commands with ZMQ heartbeats ",
+    "type": "library",
+    "license": "MIT",
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "*",
+        "friendsofphp/php-cs-fixer": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Nbj\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    }
+}
