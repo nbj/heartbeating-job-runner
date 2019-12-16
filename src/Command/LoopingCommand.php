@@ -102,6 +102,13 @@ abstract class LoopingCommand extends Command
     {
         $timeStamp = Carbon::now();
 
+        // Check if we need to run process() each cycle
+        if ($this->runInterval == 'everyTick') {
+            $this->process();
+
+            return;
+        }
+
         // Bail out if a second has not passed since last run
         if ($this->previousTimeStamp && $timeStamp->diffInSeconds($this->previousTimeStamp) == 0) {
             return;
