@@ -4,6 +4,7 @@
     "type": "library",
     "license": "MIT",
     "require": {
+        "ext-zmq": "*",
         "nbj/stopwatch": "^0.0.4"
     },
     "require-dev": {
