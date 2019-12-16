@@ -6,7 +6,6 @@ use ZMQSocket;
 use RuntimeException;
 use ZMQSocketException;
 use InvalidArgumentException;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Class DelegationProxyConnection
@@ -48,6 +47,13 @@ class DelegationProxyConnection
         );
     }
 
+    /**
+     * Sets the name of the service connecting to the socket
+     *
+     * @param $serviceName
+     *
+     * @return DelegationProxyConnection
+     */
     public static function from($serviceName)
     {
         return (new static)
@@ -109,14 +115,14 @@ class DelegationProxyConnection
     {
         // Bail-out if socket is already connected
         if ($this->isConnected()) {
-            Log::info(sprintf('Service [%s] - Reconnecting socket', $this->serviceName));
+            $this->logInfo(sprintf('Service [%s] - Reconnecting socket', $this->serviceName));
 
             return;
         }
 
         try {
             $this->socket->connect($this->dsn);
-            Log::info(sprintf('Service [%s] - Connecting socket to dsn [%s]', $this->serviceName, $this->dsn));
+            $this->logInfo(sprintf('Service [%s] - Connecting socket to dsn [%s]', $this->serviceName, $this->dsn));
 
             // As it takes a small amount of time before
             // a socket accepts message after first connect
@@ -125,7 +131,7 @@ class DelegationProxyConnection
         } catch (ZMQSocketException $exception) {
             $message = sprintf('Service [%s] - failed to connect socket to dsn [%s] - Exception: %s', $this->serviceName, $this->dsn, $exception->getMessage());
 
-            Log::error($message);
+            $this->logError($message);
         }
 
         return $this;
@@ -200,7 +206,7 @@ class DelegationProxyConnection
             $this->socket->sendMulti($message);
         } catch (ZMQSocketException $exception) {
             $message = sprintf('Service [%s] - failed sending message [%s] - Exception: %s', $this->serviceName, json_encode($message), $exception->getMessage());
-            Log::error($message);
+            $this->logError($message);
 
             throw new RuntimeException($message);
         }
@@ -216,7 +222,7 @@ class DelegationProxyConnection
     {
         if ($this->isNotConnected()) {
             $message = sprintf('Service [%s] - Cannot send message, socket is not connected', $this->serviceName);
-            Log::error($message);
+            $this->logError($message);
 
             throw new RuntimeException($message);
         }
@@ -234,14 +240,14 @@ class DelegationProxyConnection
     {
         if ($this->isNotValid($channel)) {
             $message = sprintf('Service [%s] - Cannot send message, channel is invalid, expected non-empty string, [%s] given', $this->serviceName, gettype($channel));
-            Log::error($message);
+            $this->logError($message);
 
             throw new InvalidArgumentException($message);
         }
 
         if ($this->isNotValid($topic)) {
             $message = sprintf('Service [%s] - Cannot send message, topic is invalid, expected non-empty string, [%s] given', $this->serviceName, gettype($topic));
-            Log::error($message);
+            $this->logError($message);
 
             throw new InvalidArgumentException($message);
         }
@@ -291,5 +297,47 @@ class DelegationProxyConnection
     protected function isNotJson($message)
     {
         return ! $this->isJson($message);
+    }
+
+    /**
+     * Checks for laravel log support
+     *
+     * @return bool
+     */
+    protected function supportsLaravelLogging()
+    {
+        return class_exists(Illuminate\Support\Facades\Log::class);
+    }
+
+    /**
+     * Logs an info message
+     *
+     * @param $message
+     */
+    protected function logInfo($message)
+    {
+        if ($this->supportsLaravelLogging()) {
+            Illuminate\Support\Facades\Log::info($message);
+
+            return;
+        }
+
+        error_log($message);
+    }
+
+    /**
+     * Logs an error message
+     *
+     * @param $message
+     */
+    protected function logError($message)
+    {
+        if ($this->supportsLaravelLogging()) {
+            Illuminate\Support\Facades\Log::error($message);
+
+            return;
+        }
+
+        error_log($message);
     }
 }

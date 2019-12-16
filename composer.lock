@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "947943939549e50cd693eff099ac28fd",
+    "content-hash": "a8425a3654628da1badc188a9394e827",
     "packages": [
         {
             "name": "nbj/stopwatch",
