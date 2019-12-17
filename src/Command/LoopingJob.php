@@ -56,8 +56,6 @@ abstract class LoopingJob
      */
     public function __construct()
     {
-        parent::__construct();
-
         if (method_exists($this, 'sendZMQHeartbeat')) {
             $this->shouldSendHeartbeats = true;
         }
