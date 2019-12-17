@@ -65,12 +65,12 @@ abstract class LoopingJob
      * Execute the console command.
      *
      * @param bool $runOnce
+     * @param bool $logProcessTime
      *
      * @return void
      *
-     * @throws Exception
      */
-    public function handle($runOnce = false)
+    public function handle($runOnce = false, $logProcessTime = false)
     {
         do {
             $processTime = null;
@@ -89,6 +89,10 @@ abstract class LoopingJob
             $waitTime = $this->cycleTimePadding;
 
             if ($processTime != null) {
+                if ($logProcessTime) {
+                    error_log($processTime->millisecondsAsFloat());
+                }
+
                 $waitTime = $this->cycleTimePadding < $processTime->microseconds()
                     ? 0
                     : $this->cycleTimePadding - $processTime->microseconds();
@@ -104,6 +108,13 @@ abstract class LoopingJob
     private function checkAndRunInternalSchedule()
     {
         $timeStamp = Carbon::now();
+
+        // Check if we need to run process() each cycle
+        if ($this->runInterval == 'everyTick') {
+            $this->process();
+
+            return;
+        }
 
         // Bail out if a second has not passed since last run
         if ($this->previousTimeStamp && $timeStamp->diffInSeconds($this->previousTimeStamp) == 0) {

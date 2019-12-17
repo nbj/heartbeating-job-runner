@@ -62,12 +62,12 @@ abstract class LoopingCommand extends Command
      * Execute the console command.
      *
      * @param bool $runOnce
+     * @param bool $logProcessTime
      *
      * @return void
      *
-     * @throws Exception
      */
-    public function handle($runOnce = false)
+    public function handle($runOnce = false, $logProcessTime = false)
     {
         do {
             $processTime = null;
@@ -86,6 +86,10 @@ abstract class LoopingCommand extends Command
             $waitTime = $this->cycleTimePadding;
 
             if ($processTime != null) {
+                if ($logProcessTime) {
+                    error_log($processTime->millisecondsAsFloat());
+                }
+
                 $waitTime = $this->cycleTimePadding < $processTime->microseconds()
                     ? 0
                     : $this->cycleTimePadding - $processTime->microseconds();
