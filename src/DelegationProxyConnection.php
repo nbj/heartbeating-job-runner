@@ -117,7 +117,7 @@ class DelegationProxyConnection
         if ($this->isConnected()) {
             $this->logInfo(sprintf('Service [%s] - Reconnecting socket', $this->serviceName));
 
-            return;
+            return $this;
         }
 
         try {
