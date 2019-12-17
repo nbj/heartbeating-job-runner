@@ -61,6 +61,17 @@ trait SendsZMQHeartbeats
         if ($this->resetCounter) {
             $this->resetCounter = false;
         }
+
+        // We limit the max integer size to the equivalent of a signed 32bit integer (2.147.483.647)
+        $maxInt = pow(2, 32) / 2;
+
+        // Increment the heartbeat count and make sure we rollover when we reach our max integer size
+        $this->count++;
+
+        if ($this->count > $maxInt) {
+            $this->count = 0;
+            $this->resetCounter = true;
+        }
     }
 
     /**
