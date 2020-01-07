@@ -49,9 +49,10 @@ trait SendsZMQHeartbeats
         DelegationProxyConnection::from($this->name)
             ->connectTo(self::$socket)
             ->sendMessage('magnet_activate', 'heartbeat', [
-                'message' => sprintf('Service [%s] - Heartbeat', $this->name),
-                'count'   => $this->count,
-                'reset'   => $this->resetCounter
+                'message'    => sprintf('Service [%s] - Heartbeat', $this->name),
+                'count'      => $this->count,
+                'reset'      => $this->resetCounter,
+                'identifier' => $this->name
             ]);
 
         /**
